@@ -1,7 +1,8 @@
 pipeline {
     agent any
     environment {
-        IMAGE_NAME = 'abdieeuh/simple-app'
+        // UBAH INI dengan username Docker Hub milikmu!
+        IMAGE_NAME = 'USERNAME_DOCKERHUB_KAMU/simple-app'
         REGISTRY = 'https://index.docker.io/v1/'
         REGISTRY_CREDENTIALS = 'dockerhub-credentials'
         PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
@@ -37,6 +38,17 @@ pipeline {
                         docker.image("${IMAGE_NAME}:${env.BUILD_NUMBER}").push()
                         docker.image("${IMAGE_NAME}:${env.BUILD_NUMBER}").push('latest')
                     }
+                }
+            }
+        }
+        // TAHAP TAMBAHAN: Agar aplikasi jalan dan bisa di-Ngrok
+        stage('Deploy & Run Container') {
+            steps {
+                script {
+                    echo 'Menjalankan container...'
+                    sh 'docker stop app-container || true'
+                    sh 'docker rm app-container || true'
+                    sh "docker run -d -p 5001:5001 --name app-container ${IMAGE_NAME}:${env.BUILD_NUMBER}"
                 }
             }
         }

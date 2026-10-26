@@ -13,8 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy seluruh file project ke /app
 COPY . .
 
-# Expose port untuk Flask / FastAPI
-EXPOSE 5000
+# Expose port yang sesuai dengan app.py
+EXPOSE 5001
 
 # Jalankan aplikasi
 CMD ["python", "app.py"]
