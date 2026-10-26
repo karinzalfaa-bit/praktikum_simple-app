@@ -1,12 +1,10 @@
 pipeline {
     agent any
     environment {
-        // UBAH INI dengan username Docker Hub milikmu!
+        // UBAH DENGAN USERNAME DOCKER HUB KAMU!
         IMAGE_NAME = 'USERNAME_DOCKERHUB_KAMU/simple-app'
         REGISTRY = 'https://index.docker.io/v1/'
         REGISTRY_CREDENTIALS = 'dockerhub-credentials'
-        PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-        DOCKER_HOST = "unix:///var/run/docker.sock"
     }
     stages {
         stage('Checkout') {
@@ -18,7 +16,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Mulai build aplikasi'
-                sh 'echo "Build selesai ✅"'
+                bat 'echo Build selesai'
             }
         }
         stage('Build Docker Image') {
@@ -26,7 +24,6 @@ pipeline {
                 script {
                     echo 'Membangun Docker image...'
                     docker.build("${IMAGE_NAME}:${env.BUILD_NUMBER}")
-                    echo "Image berhasil dibuat: ${IMAGE_NAME}:${env.BUILD_NUMBER}"
                 }
             }
         }
@@ -41,21 +38,20 @@ pipeline {
                 }
             }
         }
-        // TAHAP TAMBAHAN: Agar aplikasi jalan dan bisa di-Ngrok
         stage('Deploy & Run Container') {
             steps {
                 script {
                     echo 'Menjalankan container...'
-                    sh 'docker stop app-container || true'
-                    sh 'docker rm app-container || true'
-                    sh "docker run -d -p 5001:5001 --name app-container ${IMAGE_NAME}:${env.BUILD_NUMBER}"
+                    bat 'docker stop app-container 2>NUL || exit 0'
+                    bat 'docker rm app-container 2>NUL || exit 0'
+                    bat "docker run -d -p 5001:5001 --name app-container ${IMAGE_NAME}:${env.BUILD_NUMBER}"
                 }
             }
         }
     }
     post {
         always {
-            echo 'Selesai build 🏁OYYY'
+            echo 'Selesai build'
         }
     }
 }
